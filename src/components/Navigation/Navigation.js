@@ -7,9 +7,6 @@ import { AppBar, Toolbar, IconButton } from '@material-ui/core';
 import axios from 'axios';
 
 class Navigation extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   incrementCounter = () => {
     this.props.setGlobalCounter(this.props.count + 1);
@@ -28,6 +25,7 @@ class Navigation extends Component {
           <Toolbar>
             <div>
               <Link to="/">Home</Link>
+              <Link to="/users">Users</Link>
               <Link to="/Error">Error</Link>
             </div>
             <IconButton onClick={ this.incrementCounter } >

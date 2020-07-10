@@ -1,5 +1,6 @@
 const initState = {
-    count: 1
+    count: 1,
+    users: []
 }
 
 const baseReducer = (state = initState, action) => {
@@ -13,6 +14,11 @@ const baseReducer = (state = initState, action) => {
       return {
           ...state,
           count: action.count
+      };
+    case 'setUsers':
+      return {
+          ...state,
+          users: action.users
       };
     default:
       return state;
