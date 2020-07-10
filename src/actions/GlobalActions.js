@@ -11,3 +11,10 @@ export const setGlobalCounter = (count) => {
       count
     }
 };
+
+export const setUsers = (users) => {
+  return {
+    type: 'setUsers',
+    users
+  }
+};
