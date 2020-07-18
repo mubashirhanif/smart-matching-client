@@ -1,56 +1,70 @@
 import React, { Component } from 'react';
-import './Navigation.css';
+import styles from './Navigation.css';
+import Link from '@material-ui/core/Link';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar'
+import TypoGraphy from '@material-ui/core/Typography'
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import { connect } from 'react-redux';
 import { setGlobalCounter } from '../../actions/GlobalActions';
-import { Link } from 'react-router-dom';
-import { AppBar, Toolbar, IconButton } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
+import { styled } from '@material-ui/core/styles';
 import axios from 'axios';
 
+
+const SMLink = styled(Link)({
+  textDecoration: 'none',
+  cursor: 'pointer',
+  color: 'black'
+});
 class Navigation extends Component {
 
-  incrementCounter = () => {
-    this.props.setGlobalCounter(this.props.count + 1);
-    console.log(`counter: ${this.props.count}`);
-  }
-
-  async testApiJSON() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts/1');
-    console.log(response.data);
-  }
-
   render() {
+    const linkStyle = [styles.link, 'white'].join(' ')
     return (
-      <div className="Navigation">
-        <AppBar position="static" color="default">
+
+      <div>
+        <AppBar color="default" position="static">
           <Toolbar>
-            <div>
-              <Link to="/">Home</Link>
-              <Link to="/users">Users</Link>
-              <Link to="/Error">Error</Link>
-            </div>
-            <IconButton onClick={ this.incrementCounter } >
-              <i className="material-icons">Increment Counter</i>
-            </IconButton>
-            <IconButton onClick={ this.testApiJSON } >
-              <i className="material-icons">Test JSON get</i>
-            </IconButton>
+            <TypoGraphy color="inherit" variant="title">
+              <SMLink color="primary" to={"/"} component={RouterLink} >SmartMatching </SMLink>
+            </TypoGraphy>
+
+            <List component="nav">
+              <ListItem component="div">
+                <ListItemText inset>
+                  <TypoGraphy color="inherit" variant="title">
+                    <SMLink to={"/"} component={RouterLink} variant="inherit">How it Works</SMLink>
+                  </TypoGraphy>
+                </ListItemText>
+
+                <ListItemText inset>
+                  <TypoGraphy color="inherit" variant="title">
+                    <SMLink to={"/users"} component={RouterLink}>Find a Service</SMLink>
+                  </TypoGraphy>
+                </ListItemText>
+
+                <ListItemText inset>
+                  <TypoGraphy color="inherit" variant="title">
+                    <SMLink to={"/Error"} component={RouterLink}>Login</SMLink>
+                  </TypoGraphy>
+                </ListItemText>
+
+                <ListItemText inset>
+                  <TypoGraphy color="inherit" variant="title">
+                    <SMLink to={"/Error"} component={RouterLink}>Sign Up</SMLink>
+                  </TypoGraphy>
+                </ListItemText>
+              </ListItem >
+            </List>
           </Toolbar>
         </AppBar>
+
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    count: state.count
-  };
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setGlobalCounter: count => { dispatch(setGlobalCounter(count)); }
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Navigation);
+export default Navigation;
