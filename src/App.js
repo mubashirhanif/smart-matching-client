@@ -5,10 +5,11 @@ import { CssBaseline } from "@material-ui/core";
 import TypoGraphy from "@material-ui/core/Typography";
 import Error from "./components/Error/Error";
 import Home from "./components/Home/Home";
-import Navigation from "./components/Navigation/Navigation";
 import User from "./components/User/User";
 import Login from "./components/Login/Login";
 import Signup from "./components/Signup/Signup";
+import Search from "./components/Search/Search";
+import Navigation from "./components/Navigation/Navigation";
 import { connect } from "react-redux";
 import {
   setApiUrl,
@@ -17,7 +18,7 @@ import {
 } from "./actions/GlobalActions";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import Geocode from "react-geocode";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -27,6 +28,8 @@ toast.configure({
   pauseOnHover: true,
   position: "bottom-right",
 });
+Geocode.setApiKey("AIzaSyChmiFhlkbfTmX4m2PiUtH6kYRVjibxKE4");
+Geocode.setLanguage("en");
 
 class App extends Component {
   constructor(props) {
@@ -47,7 +50,7 @@ class App extends Component {
         <TypoGraphy
           color="secondary"
           component="p"
-          color="default"
+          color="inherit"
           variant="inherit"
         >
           {message}
@@ -70,6 +73,7 @@ class App extends Component {
               <Route path="/users" component={User} exact />
               <Route path="/login" component={Login} exact />
               <Route path="/signup" component={Signup} exact />
+              <Route path="/search" component={Search} exact />
               <Route path="/*" component={Error} />
             </Switch>
           </div>

@@ -1,19 +1,14 @@
 import React, { Component } from "react";
-import styles from "./Navigation.css";
 import Link from "@material-ui/core/Link";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import TypoGraphy from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import { connect } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
-import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import { setUser, setTheme, setIsLoggedIn } from "../../actions/GlobalActions";
-import axios from "axios";
+import "./Navigation.css";
 
 function LoginButton(props) {
   return (
@@ -39,7 +34,11 @@ class Navigation extends Component {
 
   handleLogoutClick = () => {
     this.props.setIsLoggedIn(false);
-    this.props.notificationHandler("success", "Logged Out!", "User logged out successfully");
+    this.props.notificationHandler(
+      "success",
+      "Logged Out!",
+      "User logged out successfully"
+    );
   };
 
   render() {
@@ -52,37 +51,37 @@ class Navigation extends Component {
     }
     return (
       <div className="root">
-        <AppBar color="default" position="static">
+        <AppBar color="inherit" position="sticky">
           <Toolbar className="nav-container">
             <TypoGraphy component="div" variant="h6" className="header-logo">
               <Link
                 underline="none"
-                color="default"
+                color="inherit"
                 to={"/"}
                 component={RouterLink}
               >
                 SmartMatching
               </Link>
             </TypoGraphy>
-            <TypoGraphy component="div" color="default" variant="default">
-              <Button to={"/about"} component={RouterLink} variant="default">
+            <TypoGraphy component="div" color="inherit" variant="inherit">
+              <Button to={"/about"} component={RouterLink} variant="text">
                 How it Works
               </Button>
             </TypoGraphy>
             <TypoGraphy
               component="div"
-              color="default"
-              variant="default"
+              color="inherit"
+              variant="inherit"
               className="links"
             >
-              <Button to={"/about"} component={RouterLink} variant="default">
+              <Button to={"/about"} component={RouterLink} variant="text">
                 Find a Service
               </Button>
             </TypoGraphy>
             <TypoGraphy component="div" variant="inherit">
               {button}
             </TypoGraphy>
-            <TypoGraphy color="default" variant="default">
+            <TypoGraphy color="inherit" variant="inherit">
               <Switch
                 checked={this.props.theme === "dark"}
                 onChange={this.switchTheme}
@@ -95,7 +94,7 @@ class Navigation extends Component {
       </div>
     );
     // <div className="root">
-    //   <AppBar color="default" position="static">
+    //   <AppBar color="inherit" position="static">
     //     <Toolbar>
     //       <TypoGraphy color="default" variant="h4">
     //         <Link
