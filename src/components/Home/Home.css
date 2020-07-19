@@ -39,6 +39,6 @@
   /*whatever width you want*/
 }
 
-.google-places-autocomplete {
-  width: 25% !important;
+.places-autocomplete-home {
+  width: 25%;
 }

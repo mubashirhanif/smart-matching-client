@@ -104,21 +104,22 @@ class Home extends Component {
                   >
                     <MyLocationIcon />
                   </IconButton>
-
-                  <GooglePlacesAutocomplete
-                    onSelect={this.handleLocationSelect}
-                    renderInput={(props) => (
-                      <div className="custom-wrapper">
-                        <TextField
-                          id="filled-location"
-                          label="Location"
-                          name="location"
-                          variant="filled"
-                          {...props}
-                        />
-                      </div>
-                    )}
-                  />
+                  <div className="places-autocomplete-home">
+                    <GooglePlacesAutocomplete
+                      onSelect={this.handleLocationSelect}
+                      renderInput={(props) => (
+                        <div>
+                          <TextField
+                            id="filled-location"
+                            label="Location"
+                            name="location"
+                            variant="filled"
+                            {...props}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
                   <div className="search-input-container">
                     <TextField
                       id="filled-search"
@@ -139,7 +140,7 @@ class Home extends Component {
             </div>
           </Grid>
           <Grid item xs={6} className="search-side">
-            <img src="https://source.unsplash.com/random" alt="image"/>
+            <img src="https://source.unsplash.com/random" alt="image" />
           </Grid>
         </Grid>
       </div>
