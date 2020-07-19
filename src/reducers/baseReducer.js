@@ -2,6 +2,7 @@ const initState = {
   user: null,
   theme: "light",
   isLoggedIn: false,
+  notificationHandler: null,
 };
 
 const baseReducer = (state = initState, action) => {
@@ -21,12 +22,17 @@ const baseReducer = (state = initState, action) => {
         ...state,
         user: action.user,
       };
-    case "setIsLoggedIn":
-      return {
-        ...state,
-        isLoggedIn: action.isLoggedIn,
-      };
-    default:
+      case "setIsLoggedIn":
+        return {
+          ...state,
+          isLoggedIn: action.isLoggedIn,
+        };
+      case "setNotificationHandler":
+        return {
+          ...state,
+          notificationHandler: action.notificationHandler,
+        };
+      default:
       return state;
   }
 };
