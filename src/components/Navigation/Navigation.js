@@ -32,15 +32,6 @@ class Navigation extends Component {
     this.props.setTheme(theme);
   };
 
-  handleLoginClick = () => {
-    this.props.setIsLoggedIn(true);
-    this.props.notificationHandler(
-      "success",
-      "Logged In!",
-      "User logged in successfully"
-    );
-  };
-
   handleLogoutClick = () => {
     this.props.setIsLoggedIn(false);
     this.props.notificationHandler(
@@ -56,7 +47,7 @@ class Navigation extends Component {
     if (isLoggedIn) {
       button = <LogoutButton onClick={this.handleLogoutClick} />;
     } else {
-      button = <LoginButton onClick={this.handleLoginClick} />;
+      button = <LoginButton />;
     }
     return (
       <div className="root">

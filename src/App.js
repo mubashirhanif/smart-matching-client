@@ -6,6 +6,8 @@ import TypoGraphy from "@material-ui/core/Typography";
 import Error from "./components/Error/Error";
 import Home from "./components/Home/Home";
 import User from "./components/User/User";
+import Login from "./components/Login/Login";
+import Signup from "./components/Signup/Signup";
 import Search from "./components/Search/Search";
 import Navigation from "./components/Navigation/Navigation";
 import { connect } from "react-redux";
@@ -69,6 +71,8 @@ class App extends Component {
             <Switch>
               <Route path="/" component={Home} exact />
               <Route path="/users" component={User} exact />
+              <Route path="/login" component={Login} exact />
+              <Route path="/signup" component={Signup} exact />
               <Route path="/search" component={Search} exact />
               <Route path="/*" component={Error} />
             </Switch>
