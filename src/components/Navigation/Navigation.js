@@ -1,56 +1,188 @@
-import React, { Component } from 'react';
-import './Navigation.css';
-import { connect } from 'react-redux';
-import { setGlobalCounter } from '../../actions/GlobalActions';
-import { Link } from 'react-router-dom';
-import { AppBar, Toolbar, IconButton } from '@material-ui/core';
-import axios from 'axios';
+import React, { Component } from "react";
+import styles from "./Navigation.css";
+import Link from "@material-ui/core/Link";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import TypoGraphy from "@material-ui/core/Typography";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import { connect } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Switch from "@material-ui/core/Switch";
+import { setUser, setTheme, setIsLoggedIn } from "../../actions/GlobalActions";
+import axios from "axios";
+
+function LoginButton(props) {
+  return (
+    <Button to={"/login"} component={RouterLink} onClick={props.onClick}>
+      Login
+    </Button>
+  );
+}
+
+function LogoutButton(props) {
+  return (
+    <Button to={"/logout"} component={RouterLink} onClick={props.onClick}>
+      Logout
+    </Button>
+  );
+}
 
 class Navigation extends Component {
+  switchTheme = (event) => {
+    const theme = event.target.checked ? "dark" : "light";
+    this.props.setTheme(theme);
+  };
 
-  incrementCounter = () => {
-    this.props.setGlobalCounter(this.props.count + 1);
-    console.log(`counter: ${this.props.count}`);
-  }
+  showLoginButton = () => {
+    const isLoggedIn = this.props.isLoggedIn;
+    let button;
+    if (isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />;
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />;
+    }
+    return button;
+  };
 
-  async testApiJSON() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts/1');
-    console.log(response.data);
-  }
+  handleLoginClick = () => {
+    this.props.setIsLoggedIn(true);
+  };
+
+  handleLogoutClick = () => {
+    this.props.setIsLoggedIn(false);
+  };
 
   render() {
     return (
-      <div className="Navigation">
-        <AppBar position="static" color="default">
-          <Toolbar>
-            <div>
-              <Link to="/">Home</Link>
-              <Link to="/users">Users</Link>
-              <Link to="/Error">Error</Link>
-            </div>
-            <IconButton onClick={ this.incrementCounter } >
-              <i className="material-icons">Increment Counter</i>
-            </IconButton>
-            <IconButton onClick={ this.testApiJSON } >
-              <i className="material-icons">Test JSON get</i>
-            </IconButton>
+      <div className="root">
+        <AppBar color="default" position="static">
+          <Toolbar className="nav-container">
+            <TypoGraphy component="div" variant="h6" className="header-logo">
+              <Link
+                underline="none"
+                color="default"
+                to={"/"}
+                component={RouterLink}
+              >
+                SmartMatching
+              </Link>
+            </TypoGraphy>
+            <TypoGraphy component="div" color="default" variant="default">
+              <Button to={"/about"} component={RouterLink} variant="default">
+                How it Works
+              </Button>
+            </TypoGraphy>
+            <TypoGraphy
+              component="div"
+              color="default"
+              variant="default"
+              className="links"
+            >
+              <Button to={"/about"} component={RouterLink} variant="default">
+                Find a Service
+              </Button>
+            </TypoGraphy>
+            <TypoGraphy component="div" variant="inherit">
+              {this.showLoginButton()}
+            </TypoGraphy>
+            <TypoGraphy color="default" variant="default">
+              <Switch
+                checked={this.props.theme === "dark"}
+                onChange={this.switchTheme}
+                name="themeSwitch"
+                inputProps={{ "aria-label": "secondary checkbox" }}
+              />
+            </TypoGraphy>
           </Toolbar>
         </AppBar>
       </div>
     );
+    // <div className="root">
+    //   <AppBar color="default" position="static">
+    //     <Toolbar>
+    //       <TypoGraphy color="default" variant="h4">
+    //         <Link
+    //           className="header-icon"
+    //           color="default"
+    //           to={"/"}
+    //           component={RouterLink}
+    //         >
+    //           SmartMatching
+    //         </Link>
+    //       </TypoGraphy>
+
+    //       <List component="nav" className="inline">
+    //         <ListItem component="div" className="list">
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Button
+    //                 to={"/about"}
+    //                 component={RouterLink}
+    //                 variant="default"
+    //               >
+    //                 How it Works
+    //               </Button>
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Button to={"/service"} component={RouterLink}>
+    //                 Find a Service
+    //               </Button>
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //         </ListItem>
+
+    //         <ListItem component="div">
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Button to={"/login"} component={RouterLink}>
+    //                 Login
+    //               </Button>
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Switch
+    //                 checked={this.props.theme === "dark"}
+    //                 onChange={this.switchTheme}
+    //                 name="themeSwitch"
+    //                 inputProps={{ "aria-label": "secondary checkbox" }}
+    //               />
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //         </ListItem>
+    //       </List>
+    //     </Toolbar>
+    //   </AppBar>
+    // </div>
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    count: state.count
+    user: state.user,
+    theme: state.theme,
+    isLoggedIn: state.isLoggedIn,
   };
-}
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setGlobalCounter: count => { dispatch(setGlobalCounter(count)); }
+    setUser: (user) => {
+      dispatch(setUser(user));
+    },
+    setTheme: (theme) => {
+      dispatch(setTheme(theme));
+    },
+    setIsLoggedIn: (isLoggedIn) => {
+      dispatch(setIsLoggedIn(isLoggedIn));
+    },
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Navigation);
