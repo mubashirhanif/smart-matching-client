@@ -1,2 +1,8 @@
-.Error{
+.error{
+  text-align: center;
+  margin-top: 80px;
+}
+
+.image-404 {  
+  pointer-events: none;
 }
