@@ -14,7 +14,7 @@ import {
 } from "./actions/GlobalActions";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import Geocode from "react-geocode";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -24,6 +24,8 @@ toast.configure({
   pauseOnHover: true,
   position: "bottom-right",
 });
+Geocode.setApiKey("AIzaSyChmiFhlkbfTmX4m2PiUtH6kYRVjibxKE4");
+Geocode.setLanguage("en");
 
 class App extends Component {
   constructor(props) {
