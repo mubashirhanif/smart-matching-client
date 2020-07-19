@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './User.css';
 import { connect } from 'react-redux';
-import { setUsers } from '../../actions/GlobalActions';
+import { setUser } from '../../actions/GlobalActions';
 import axios from 'axios';
 
 class User extends Component {
@@ -33,7 +33,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setUsers: users => { dispatch(setUsers(users)); }
+    setUser: user => { dispatch(setUser(user)); }
   };
 }
 

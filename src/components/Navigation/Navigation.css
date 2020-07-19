@@ -1,0 +1,21 @@
+.inline {
+  display: inline-flex;
+}
+.header-logo {    
+  background-color: #0075FF;
+  padding: 10px 16px;
+  border-radius: 1px 1px 12px 12px;
+}
+
+.root {
+}
+
+.links {
+  flex-grow: 1;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

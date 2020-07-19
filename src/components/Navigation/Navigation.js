@@ -1,70 +1,188 @@
-import React, { Component } from 'react';
-import styles from './Navigation.css';
-import Link from '@material-ui/core/Link';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar'
-import TypoGraphy from '@material-ui/core/Typography'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { connect } from 'react-redux';
-import { setGlobalCounter } from '../../actions/GlobalActions';
-import { Link as RouterLink } from 'react-router-dom';
-import { styled } from '@material-ui/core/styles';
-import axios from 'axios';
+import React, { Component } from "react";
+import styles from "./Navigation.css";
+import Link from "@material-ui/core/Link";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import TypoGraphy from "@material-ui/core/Typography";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import { connect } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Switch from "@material-ui/core/Switch";
+import { setUser, setTheme, setIsLoggedIn } from "../../actions/GlobalActions";
+import axios from "axios";
 
+function LoginButton(props) {
+  return (
+    <Button to={"/login"} component={RouterLink} onClick={props.onClick}>
+      Login
+    </Button>
+  );
+}
 
-const SMLink = styled(Link)({
-  textDecoration: 'none',
-  cursor: 'pointer',
-  color: 'black'
-});
+function LogoutButton(props) {
+  return (
+    <Button to={"/logout"} component={RouterLink} onClick={props.onClick}>
+      Logout
+    </Button>
+  );
+}
+
 class Navigation extends Component {
+  switchTheme = (event) => {
+    const theme = event.target.checked ? "dark" : "light";
+    this.props.setTheme(theme);
+  };
+
+  showLoginButton = () => {
+    const isLoggedIn = this.props.isLoggedIn;
+    let button;
+    if (isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />;
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />;
+    }
+    return button;
+  };
+
+  handleLoginClick = () => {
+    this.props.setIsLoggedIn(true);
+  };
+
+  handleLogoutClick = () => {
+    this.props.setIsLoggedIn(false);
+  };
 
   render() {
-    const linkStyle = [styles.link, 'white'].join(' ')
     return (
-
-      <div>
+      <div className="root">
         <AppBar color="default" position="static">
-          <Toolbar>
-            <TypoGraphy color="inherit" variant="title">
-              <SMLink color="primary" to={"/"} component={RouterLink} >SmartMatching </SMLink>
+          <Toolbar className="nav-container">
+            <TypoGraphy component="div" variant="h6" className="header-logo">
+              <Link
+                underline="none"
+                color="default"
+                to={"/"}
+                component={RouterLink}
+              >
+                SmartMatching
+              </Link>
             </TypoGraphy>
-
-            <List component="nav">
-              <ListItem component="div">
-                <ListItemText inset>
-                  <TypoGraphy color="inherit" variant="title">
-                    <SMLink to={"/"} component={RouterLink} variant="inherit">How it Works</SMLink>
-                  </TypoGraphy>
-                </ListItemText>
-
-                <ListItemText inset>
-                  <TypoGraphy color="inherit" variant="title">
-                    <SMLink to={"/users"} component={RouterLink}>Find a Service</SMLink>
-                  </TypoGraphy>
-                </ListItemText>
-
-                <ListItemText inset>
-                  <TypoGraphy color="inherit" variant="title">
-                    <SMLink to={"/Error"} component={RouterLink}>Login</SMLink>
-                  </TypoGraphy>
-                </ListItemText>
-
-                <ListItemText inset>
-                  <TypoGraphy color="inherit" variant="title">
-                    <SMLink to={"/Error"} component={RouterLink}>Sign Up</SMLink>
-                  </TypoGraphy>
-                </ListItemText>
-              </ListItem >
-            </List>
+            <TypoGraphy component="div" color="default" variant="default">
+              <Button to={"/about"} component={RouterLink} variant="default">
+                How it Works
+              </Button>
+            </TypoGraphy>
+            <TypoGraphy
+              component="div"
+              color="default"
+              variant="default"
+              className="links"
+            >
+              <Button to={"/about"} component={RouterLink} variant="default">
+                Find a Service
+              </Button>
+            </TypoGraphy>
+            <TypoGraphy component="div" variant="inherit">
+              {this.showLoginButton()}
+            </TypoGraphy>
+            <TypoGraphy color="default" variant="default">
+              <Switch
+                checked={this.props.theme === "dark"}
+                onChange={this.switchTheme}
+                name="themeSwitch"
+                inputProps={{ "aria-label": "secondary checkbox" }}
+              />
+            </TypoGraphy>
           </Toolbar>
         </AppBar>
-
       </div>
     );
+    // <div className="root">
+    //   <AppBar color="default" position="static">
+    //     <Toolbar>
+    //       <TypoGraphy color="default" variant="h4">
+    //         <Link
+    //           className="header-icon"
+    //           color="default"
+    //           to={"/"}
+    //           component={RouterLink}
+    //         >
+    //           SmartMatching
+    //         </Link>
+    //       </TypoGraphy>
+
+    //       <List component="nav" className="inline">
+    //         <ListItem component="div" className="list">
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Button
+    //                 to={"/about"}
+    //                 component={RouterLink}
+    //                 variant="default"
+    //               >
+    //                 How it Works
+    //               </Button>
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Button to={"/service"} component={RouterLink}>
+    //                 Find a Service
+    //               </Button>
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //         </ListItem>
+
+    //         <ListItem component="div">
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Button to={"/login"} component={RouterLink}>
+    //                 Login
+    //               </Button>
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //           <ListItemText inset>
+    //             <TypoGraphy color="default" variant="default">
+    //               <Switch
+    //                 checked={this.props.theme === "dark"}
+    //                 onChange={this.switchTheme}
+    //                 name="themeSwitch"
+    //                 inputProps={{ "aria-label": "secondary checkbox" }}
+    //               />
+    //             </TypoGraphy>
+    //           </ListItemText>
+    //         </ListItem>
+    //       </List>
+    //     </Toolbar>
+    //   </AppBar>
+    // </div>
   }
 }
 
-export default Navigation;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    theme: state.theme,
+    isLoggedIn: state.isLoggedIn,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUser: (user) => {
+      dispatch(setUser(user));
+    },
+    setTheme: (theme) => {
+      dispatch(setTheme(theme));
+    },
+    setIsLoggedIn: (isLoggedIn) => {
+      dispatch(setIsLoggedIn(isLoggedIn));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navigation);

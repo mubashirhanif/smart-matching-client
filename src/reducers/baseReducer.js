@@ -1,28 +1,34 @@
 const initState = {
-    count: 1,
-    users: []
-}
+  user: null,
+  theme: "light",
+  isLoggedIn: false,
+};
 
 const baseReducer = (state = initState, action) => {
   switch (action.type) {
-    case 'setApiUrl':
+    case "setApiUrl":
       return {
-          ...state,
-          url: action.url
+        ...state,
+        url: action.url,
       };
-    case 'setGlobalCounter':
+    case "setTheme":
       return {
-          ...state,
-          count: action.count
+        ...state,
+        theme: action.theme,
       };
-    case 'setUsers':
+    case "setUser":
       return {
-          ...state,
-          users: action.users
+        ...state,
+        user: action.user,
+      };
+    case "setIsLoggedIn":
+      return {
+        ...state,
+        isLoggedIn: action.isLoggedIn,
       };
     default:
       return state;
-  };
-}
+  }
+};
 
-export default baseReducer
+export default baseReducer;
