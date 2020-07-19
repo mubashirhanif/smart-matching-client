@@ -4,16 +4,17 @@
   margin-right: auto;
 }
 
-.search-input {
-  margin-top: 7px;
+.search-input-container {
   flex-grow: 1;
 }
 
-.search-container {
-  position: absolute;
+.search-input {
   width: 100%;
-  height: 100%;
-  background-image: url(https://via.placeholder.com/150);
+}
+
+.search-side {
+  width: 100%;
+  border-left: 100px solid transparent;
 }
 
 .search-middle {
@@ -21,17 +22,14 @@
   vertical-align: middle;
 }
 .search-outer {
-  display: table;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
   width: 100%;
 }
 
 .search-middle {
-  display: table-cell;
-  vertical-align: middle;
+  position: absolute;
+  margin-left: 30px;
+  top: 50%;
+  width: 40%;
 }
 
 .inner {
@@ -39,4 +37,8 @@
   margin-right: auto;
   width: 400px;
   /*whatever width you want*/
+}
+
+.google-places-autocomplete {
+  width: 25% !important;
 }

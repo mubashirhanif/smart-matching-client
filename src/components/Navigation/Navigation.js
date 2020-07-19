@@ -8,6 +8,7 @@ import { Link as RouterLink } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import { setUser, setTheme, setIsLoggedIn } from "../../actions/GlobalActions";
+import "./Navigation.css";
 
 function LoginButton(props) {
   return (
@@ -59,7 +60,7 @@ class Navigation extends Component {
     }
     return (
       <div className="root">
-        <AppBar color="inherit" position="static">
+        <AppBar color="inherit" position="sticky">
           <Toolbar className="nav-container">
             <TypoGraphy component="div" variant="h6" className="header-logo">
               <Link
