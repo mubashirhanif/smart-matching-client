@@ -37,7 +37,17 @@ class Navigation extends Component {
     this.props.setTheme(theme);
   };
 
-  showLoginButton = () => {
+  handleLoginClick = () => {
+    this.props.setIsLoggedIn(true);
+    this.props.notificationHandler("success", "Logged In!", "User logged in successfully");
+  };
+
+  handleLogoutClick = () => {
+    this.props.setIsLoggedIn(false);
+    this.props.notificationHandler("success", "Logged Out!", "User logged out successfully");
+  };
+
+  render() {
     const isLoggedIn = this.props.isLoggedIn;
     let button;
     if (isLoggedIn) {
@@ -45,18 +55,6 @@ class Navigation extends Component {
     } else {
       button = <LoginButton onClick={this.handleLoginClick} />;
     }
-    return button;
-  };
-
-  handleLoginClick = () => {
-    this.props.setIsLoggedIn(true);
-  };
-
-  handleLogoutClick = () => {
-    this.props.setIsLoggedIn(false);
-  };
-
-  render() {
     return (
       <div className="root">
         <AppBar color="default" position="static">
@@ -87,7 +85,7 @@ class Navigation extends Component {
               </Button>
             </TypoGraphy>
             <TypoGraphy component="div" variant="inherit">
-              {this.showLoginButton()}
+              {button}
             </TypoGraphy>
             <TypoGraphy color="default" variant="default">
               <Switch
@@ -168,6 +166,7 @@ const mapStateToProps = (state) => {
     user: state.user,
     theme: state.theme,
     isLoggedIn: state.isLoggedIn,
+    notificationHandler: state.notificationHandler,
   };
 };
 

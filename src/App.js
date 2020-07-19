@@ -7,9 +7,22 @@ import Home from "./components/Home/Home";
 import Navigation from "./components/Navigation/Navigation";
 import User from "./components/User/User";
 import { connect } from "react-redux";
-import { setApiUrl, setTheme } from "./actions/GlobalActions";
+import {
+  setApiUrl,
+  setTheme,
+  setNotificationHandler,
+} from "./actions/GlobalActions";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+
+toast.configure({
+  autoClose: 3000,
+  draggable: true,
+  pauseOnHover: true,
+});
 
 class App extends Component {
   constructor(props) {
@@ -17,8 +30,21 @@ class App extends Component {
     this.url = `http://localhost:8080`;
     console.log(this.url);
     this.props.setApiUrl(this.url);
+    this.props.setNotificationHandler(this.notificationHandler);
     axios.defaults.withCredentials = true;
   }
+
+  notificationHandler(type, title, message) {
+    toast[type](
+      <div>
+        <p>
+          <b>{title}</b>
+        </p>
+        {message}
+      </div>
+    );
+  }
+
   render() {
     return (
       <Router>
@@ -53,6 +79,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setTheme: (theme) => {
       dispatch(setTheme(theme));
+    },
+    setNotificationHandler: (notificationHandler) => {
+      dispatch(setNotificationHandler(notificationHandler));
     },
   };
 };

@@ -25,3 +25,9 @@ export const setIsLoggedIn = (isLoggedIn) => {
     isLoggedIn,
   };
 };
+export const setNotificationHandler = (notificationHandler) => {
+  return {
+    type: "setNotificationHandler",
+    notificationHandler,
+  };
+};
