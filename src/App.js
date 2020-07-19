@@ -22,6 +22,7 @@ toast.configure({
   autoClose: 3000,
   draggable: true,
   pauseOnHover: true,
+  position: "bottom-right",
 });
 
 class App extends Component {
