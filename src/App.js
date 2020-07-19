@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
+import TypoGraphy from "@material-ui/core/Typography";
 import Error from "./components/Error/Error";
 import Home from "./components/Home/Home";
 import Navigation from "./components/Navigation/Navigation";
@@ -38,10 +39,17 @@ class App extends Component {
   notificationHandler(type, title, message) {
     toast[type](
       <div>
-        <p>
-          <b>{title}</b>
-        </p>
-        {message}
+        <TypoGraphy color="primary" component="div" variant="subtitle1">
+          {title}
+        </TypoGraphy>
+        <TypoGraphy
+          color="secondary"
+          component="p"
+          color="default"
+          variant="inherit"
+        >
+          {message}
+        </TypoGraphy>
       </div>
     );
   }
@@ -58,7 +66,7 @@ class App extends Component {
             <Switch>
               <Route path="/" component={Home} exact />
               <Route path="/users" component={User} exact />
-              <Route component={Error} />
+              <Route path="/*" component={Error} />
             </Switch>
           </div>
         </MuiThemeProvider>
