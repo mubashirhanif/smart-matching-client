@@ -1,10 +1,11 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
 import Link from "@material-ui/core/Link";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import TypoGraphy from "@material-ui/core/Typography";
-import { connect } from "react-redux";
-import { Link as RouterLink } from "react-router-dom";
+import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import Menu from "@material-ui/core/Menu";
@@ -29,7 +30,14 @@ function ProfileButton(props) {
         aria-haspopup="true"
         onClick={props.menuClickHandler}
       >
-        {props.user ? props.user.firstName : props.handleLogout() }
+        {props.user ? (
+          <Avatar>
+            {props.user.firstName[0]}
+            {props.user.lastName[0]}
+          </Avatar>
+        ) : (
+          props.handleLogout()
+        )}
       </Button>
       <Menu
         id="simple-menu"
@@ -38,19 +46,18 @@ function ProfileButton(props) {
         onClose={props.menuCloseHandler}
         keepMounted
       >
-        <MenuItem>
-          <Button
-            to={"/user"}
-            component={RouterLink}
-            onClick={props.menuCloseHandler}
-          >
-            My Account
-          </Button>
+        <MenuItem
+          to={"/user"}
+          component={RouterLink}
+          onClick={props.menuCloseHandler}
+        >
+          My Account
         </MenuItem>
-        <MenuItem>
-          <Button to={"/"} component={RouterLink} onClick={props.handleLogout}>
-            Logout
-          </Button>
+        <MenuItem to={"/service/create-service"} component={RouterLink} onClick={props.menuCloseHandler}>
+          Create Service
+        </MenuItem>
+        <MenuItem to={"/"} component={RouterLink} onClick={props.handleLogout}>
+          Logout
         </MenuItem>
       </Menu>
     </div>
@@ -132,20 +139,6 @@ class Navigation extends Component {
                 SmartMatching
               </Link>
             </TypoGraphy>
-            {/* <TypoGraphy component="div" color="inherit" variant="inherit">
-              <Button to={"/about"} component={RouterLink} variant="text">
-                How it Works
-              </Button>
-            </TypoGraphy>
-            <TypoGraphy
-              component="div"
-              color="inherit"
-              variant="inherit"
-            >
-              <Button to={"/search"} component={RouterLink} variant="text">
-                Find a Service
-              </Button>
-            </TypoGraphy> */}
             <div className="links"></div>
             <TypoGraphy component="div" variant="inherit">
               {button}
