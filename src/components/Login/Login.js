@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import { Link as RouterLink } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
@@ -13,6 +11,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { connect } from "react-redux";
 import { setUser, setIsLoggedIn } from "../../actions/GlobalActions";
+import axios from "axios";
 
 const useStyles = (theme) => ({
   paper: {
@@ -39,44 +38,78 @@ class Login extends Component {
     super(props);
     this.state = {
       fields: {
-        username: {
-          value: "",
-          errorText: "",
-        },
-        password: {
-          value: "",
-          errorText: "",
-        },
+        username: "",
+        password: "",
+      },
+      errors: {
+        username: "",
+        password: "",
       },
     };
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.submitHandler = this.submitHandler.bind(this);
+    this.loginUser = this.loginUser.bind(this);
+  }
+
+  async loginUser(userCredentials) {
+    let response = null;
+    try {
+      response = await axios.post(
+        `${this.props.url}/user/login`,
+        userCredentials
+      );
+    } catch (e) {
+      response = e.response;
+    } finally {
+      if (response.status === 200) {
+        this.props.notificationHandler("success", "Logged in Successfully!");
+        this.props.setUser(response.data.data);
+        this.props.setIsLoggedIn(true);
+        this.props.history.push("/");
+      } else if (response.status === 401) {
+        this.props.notificationHandler(
+          "error",
+          "Authentication Error!",
+          "Username or Password not correct"
+        );
+      } else {
+        this.props.notificationHandler("error", "Something not right", "");
+      }
+    }
   }
 
   onChangeHandler(event) {
     let state = this.state;
-    state.fields[event.target.name].value = event.target.value;
-    state.fields[event.target.name].errorText = "";
+    state.fields[event.target.name] = event.target.value;
+    state.errors[event.target.name] = "";
     this.setState(state);
   }
+
   submitHandler(event) {
     let cont = true;
     let state = this.state;
-    if (!state.fields.username.value) {
+    if (!state.fields.username) {
       cont = false;
-      state.fields.username.errorText = "Please provide a username";
+      state.errors.username = "Please provide a username";
     }
-    if (!state.fields.password.value) {
+    if (!state.fields.password) {
       cont = false;
-      state.fields.password.errorText = "Please provide a password";
+      state.errors.password = "Please provide a password";
     }
     this.setState(state);
     if (cont) {
       // we continue here
-      this.props.notificationHandler("success", "", "");
+
+      this.loginUser(this.state.fields);
+      //this.props.notificationHandler("success", "", "");
     }
     event.preventDefault();
   }
+
+  componentDidMount() {
+    document.title = "Log In | Smart Matching";
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -94,8 +127,8 @@ class Login extends Component {
             noValidate
           >
             <TextField
-              error={!!this.state.fields.username.errorText}
-              helperText={this.state.fields.username.errorText}
+              error={!!this.state.errors.username}
+              helperText={this.state.errors.username}
               variant="outlined"
               margin="normal"
               required
@@ -108,8 +141,8 @@ class Login extends Component {
               autoFocus
             />
             <TextField
-              error={!!this.state.fields.password.errorText}
-              helperText={this.state.fields.password.errorText}
+              error={!!this.state.errors.password}
+              helperText={this.state.errors.password}
               variant="outlined"
               margin="normal"
               required
@@ -120,10 +153,6 @@ class Login extends Component {
               id="password"
               onChange={this.onChangeHandler}
               autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
             />
             <Button
               type="submit"
@@ -155,6 +184,7 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    url: state.url,
     user: state.user,
     isLoggedIn: state.isLoggedIn,
     notificationHandler: state.notificationHandler,
