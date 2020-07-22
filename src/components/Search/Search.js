@@ -11,10 +11,6 @@ import TextField from "@material-ui/core/TextField";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import ServiceItem from "./ServiceItem/ServiceItem";
@@ -142,15 +138,13 @@ class Search extends Component {
                     onSelect={this.handleLocationSelect}
                     initialValue={this.state.query.location}
                     renderInput={(props) => (
-                      <div>
-                        <TextField
+                      <TextField
                           id="filled-location"
                           label="Location"
                           name="location"
                           variant="filled"
                           {...props}
-                        />
-                      </div>
+                      />
                     )}
                   />
                 </div>
@@ -158,7 +152,6 @@ class Search extends Component {
               <ListItem>
                 <TextField
                   id="filled-search"
-                  className="search-input"
                   label="Search field"
                   type="search"
                   name="searchTerm"
@@ -174,7 +167,7 @@ class Search extends Component {
                 <Autocomplete
                   multiple
                   id="tags-outlined"
-                  className="search-input"
+                  className="tag-input"
                   options={this.state.tags}
                   getOptionLabel={(option) => option.name}
                   defaultValue={[]}
@@ -190,7 +183,7 @@ class Search extends Component {
                 />
               </ListItem>
               <ListItem>
-                <div className="search-input">
+                <div className="price-input">
                   <TypoGraphy id="price-range-slider" gutterBottom>
                     Price range
                   </TypoGraphy>

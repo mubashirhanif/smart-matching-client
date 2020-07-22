@@ -11,7 +11,7 @@ class Error extends Component {
             ERROR #404
         </TypoGraphy>
         <div>
-          <img src={image_404} alt="image" className="image-404" />
+          <img src={image_404} alt="Not Found" className="image-404" />
         </div>
       </div>
     );
