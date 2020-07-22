@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
@@ -13,6 +11,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { connect } from "react-redux";
 import { setUser, setIsLoggedIn } from "../../actions/GlobalActions";
+import axios from "axios";
 
 const useStyles = (theme) => ({
   paper: {
@@ -39,30 +38,20 @@ class Signup extends Component {
     super(props);
     this.state = {
       fields: {
-        username: {
-          value: "",
-          errorText: "",
-        },
-        password: {
-          value: "",
-          errorText: "",
-        },
-        email: {
-          value: "",
-          errorText: "",
-        },
-        firstname: {
-          value: "",
-          errorText: "",
-        },
-        lastname: {
-          value: "",
-          errorText: "",
-        },
-        passwordrepeat: {
-          value: "",
-          errorText: "",
-        },
+        username: "",
+        password: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        passwordrepeat: "",
+      },
+      errors: {
+        username: "",
+        password: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        passwordrepeat: "",
       },
     };
     this.onChangeHandler = this.onChangeHandler.bind(this);
@@ -71,48 +60,90 @@ class Signup extends Component {
 
   onChangeHandler(event) {
     let state = this.state;
-    state.fields[event.target.name].value = event.target.value;
-    state.fields[event.target.name].errorText = "";
+    state.fields[event.target.name] = event.target.value;
+    state.errors[event.target.name] = "";
     this.setState(state);
   }
   submitHandler(event) {
     let cont = true;
     let state = this.state;
-    if (!state.fields.firstname.value) {
+    if (!state.fields.firstName) {
       cont = false;
-      state.fields.firstname.errorText = "Please provide a firstname";
+      state.errors.firstName = "Please provide a firstName";
     }
-    if (!state.fields.lastname.value) {
+    if (!state.fields.lastName) {
       cont = false;
-      state.fields.lastname.errorText = "Please provide a lastname";
+      state.errors.lastName = "Please provide a lastName";
     }
-    if (!state.fields.email.value) {
+    if (!state.fields.email) {
       cont = false;
-      state.fields.email.errorText = "Please provide a email";
+      state.errors.email = "Please provide a email";
+    } else {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(state.fields.email)) {
+        cont = false;
+        state.errors.email = "Please provide a valid email";
+      }
     }
-    if (!state.fields.username.value) {
+    if (!state.fields.username) {
       cont = false;
-      state.fields.username.errorText = "Please provide a username";
+      state.errors.username = "Please provide a username";
     }
-    if (!state.fields.password.value) {
+    if (!state.fields.password) {
       cont = false;
-      state.fields.password.errorText = "Please provide a password";
+      state.errors.password = "Please provide a password";
     }
-    if (!state.fields.passwordrepeat.value) {
+    if (!state.fields.passwordrepeat) {
       cont = false;
-      state.fields.passwordrepeat.errorText = "Please confirm your password";
-    }
-    else if (state.fields.passwordrepeat.value !== state.fields.password.value){
+      state.errors.passwordrepeat = "Please confirm your password";
+    } else if (
+      state.fields.passwordrepeat !== state.fields.password
+    ) {
       cont = false;
-      state.fields.passwordrepeat.errorText = "Passwords do not match";
+      state.errors.passwordrepeat = "Passwords do not match";
     }
     this.setState(state);
     if (cont) {
-      // we continue here
-      this.props.notificationHandler("success", "", "");
+      this.registerUser(this.state.fields);
     }
     event.preventDefault();
   }
+
+  componentDidMount() {
+    document.title = "Sign Up | Smart Matching";
+  }
+
+  async registerUser(userData) {
+    let response = null;
+    try {
+      response = await axios.post(
+        `${this.props.url}/user/`,
+        userData
+      );
+    } catch (e) {
+      response = e.response;
+    } finally {
+      console.log(response);
+
+      if (response.status === 200) {
+        this.props.notificationHandler("success", "Registered Successfully!", "Don't forget to check your email.");
+        this.props.setUser(response.data.data);
+        this.props.setIsLoggedIn(true);
+        this.props.history.push("/");
+      } else if (response.status === 400) {
+        this.props.notificationHandler(
+          "error",
+          "Error!!",
+          "Username or Email already in the system"
+        );
+      } else {
+        this.props.notificationHandler("error", "Something's not right", "");
+      }
+    }
+    
+    console.log();
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -131,37 +162,38 @@ class Signup extends Component {
           >
             <div>
               <TextField
-                error={!!this.state.fields.firstname.errorText}
-                helperText={this.state.fields.firstname.errorText}
+                error={!!this.state.errors.firstName}
+                helperText={this.state.errors.firstName}
                 variant="outlined"
                 margin="normal"
                 required
                 fullWidth
-                id="firstname"
+                id="firstName"
                 label="First Name"
-                name="firstname"
-                autoComplete="firstname"
+                name="firstName"
+                autoComplete="firstName"
                 onChange={this.onChangeHandler}
                 autoFocus
               />
               <TextField
-                error={!!this.state.fields.lastname.errorText}
-                helperText={this.state.fields.lastname.errorText}
+                error={!!this.state.errors.lastName}
+                helperText={this.state.errors.lastName}
+
                 variant="outlined"
                 margin="normal"
                 required
                 fullWidth
-                id="lastname"
+                id="lastName"
                 label="Last Name"
-                name="lastname"
-                autoComplete="lastname"
+                name="lastName"
+                autoComplete="lastName"
                 onChange={this.onChangeHandler}
                 autoFocus
               />
             </div>
             <TextField
-              error={!!this.state.fields.email.errorText}
-              helperText={this.state.fields.email.errorText}
+              error={!!this.state.errors.email}
+              helperText={this.state.errors.email}
               variant="outlined"
               margin="normal"
               required
@@ -174,8 +206,8 @@ class Signup extends Component {
               autoFocus
             />
             <TextField
-              error={!!this.state.fields.username.errorText}
-              helperText={this.state.fields.username.errorText}
+              error={!!this.state.errors.username}
+              helperText={this.state.errors.username}
               variant="outlined"
               margin="normal"
               required
@@ -188,8 +220,8 @@ class Signup extends Component {
               autoFocus
             />
             <TextField
-              error={!!this.state.fields.password.errorText}
-              helperText={this.state.fields.password.errorText}
+              error={!!this.state.errors.password}
+              helperText={this.state.errors.password}
               variant="outlined"
               margin="normal"
               required
@@ -202,8 +234,8 @@ class Signup extends Component {
               autoComplete="current-password"
             />
             <TextField
-              error={!!this.state.fields.passwordrepeat.errorText}
-              helperText={this.state.fields.passwordrepeat.errorText}
+              error={!!this.state.errors.passwordrepeat}
+              helperText={this.state.errors.passwordrepeat}
               variant="outlined"
               margin="normal"
               required
@@ -241,6 +273,7 @@ class Signup extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    url: state.url,
     user: state.user,
     isLoggedIn: state.isLoggedIn,
     notificationHandler: state.notificationHandler,

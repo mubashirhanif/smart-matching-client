@@ -10,7 +10,6 @@ import TextField from "@material-ui/core/TextField";
 import TypoGraphy from "@material-ui/core/Typography";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import Geocode from "react-geocode";
-import { Link as RouterLink } from "react-router-dom";
 import qs from "qs";
 import "react-google-places-autocomplete/dist/index.min.css";
 Geocode.setLanguage("en");
@@ -84,6 +83,11 @@ class Home extends Component {
       this.props.notificationHandler("error", "", "Can't get your location");
     }
   }
+
+  componentDidMount() {
+    document.title = "Smart Matching";
+  }
+
   render() {
     return (
       <div>
@@ -140,7 +144,7 @@ class Home extends Component {
             </div>
           </Grid>
           <Grid item xs={6} className="search-side">
-            <img src="https://source.unsplash.com/random" alt="image" />
+            <img src="https://source.unsplash.com/random" alt="" />
           </Grid>
         </Grid>
       </div>

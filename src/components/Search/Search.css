@@ -1,3 +1,11 @@
 .places-autocomplete {
   width: 100%;
 }
+
+.tag-input {
+  width: 93%;
+}
+
+.price-input {
+  width: 90%;
+}

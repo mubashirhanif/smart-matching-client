@@ -7,7 +7,10 @@ import { connect } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import { setUser, setTheme, setIsLoggedIn } from "../../actions/GlobalActions";
+import axios from "axios";
 import "./Navigation.css";
 
 function LoginButton(props) {
@@ -18,40 +21,106 @@ function LoginButton(props) {
   );
 }
 
-function LogoutButton(props) {
+function ProfileButton(props) {
   return (
-    <Button to={"/logout"} component={RouterLink} onClick={props.onClick}>
-      Logout
-    </Button>
+    <div>
+      <Button
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={props.menuClickHandler}
+      >
+        {props.user ? props.user.firstName : props.handleLogout() }
+      </Button>
+      <Menu
+        id="simple-menu"
+        anchorEl={props.menuAnchorEl}
+        open={Boolean(props.menuAnchorEl)}
+        onClose={props.menuCloseHandler}
+        keepMounted
+      >
+        <MenuItem>
+          <Button
+            to={"/user"}
+            component={RouterLink}
+            onClick={props.menuCloseHandler}
+          >
+            My Account
+          </Button>
+        </MenuItem>
+        <MenuItem>
+          <Button to={"/"} component={RouterLink} onClick={props.handleLogout}>
+            Logout
+          </Button>
+        </MenuItem>
+      </Menu>
+    </div>
   );
 }
 
 class Navigation extends Component {
-  switchTheme = (event) => {
+  constructor(props) {
+    super(props);
+    this.state = { menuAnchorEl: null };
+    this.switchTheme = this.switchTheme.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
+    this.menuClickHandler = this.menuClickHandler.bind(this);
+    this.menuCloseHandler = this.menuCloseHandler.bind(this);
+  }
+
+  switchTheme(event) {
     const theme = event.target.checked ? "dark" : "light";
     this.props.setTheme(theme);
-  };
+  }
 
-  handleLogoutClick = () => {
-    this.props.setIsLoggedIn(false);
-    this.props.notificationHandler(
-      "success",
-      "Logged Out!",
-      "User logged out successfully"
-    );
-  };
+  menuCloseHandler() {
+    let state = this.state;
+    state.menuAnchorEl = null;
+    this.setState(state);
+  }
+
+  menuClickHandler(event) {
+    let state = this.state;
+    state.menuAnchorEl = event.currentTarget;
+    this.setState(state);
+  }
+
+  async handleLogout() {
+    this.menuCloseHandler();
+    try {
+      await axios.get(`${this.props.url}/user/logout`);
+    } catch (e) {
+      console.log(e.response);
+    } finally {
+      this.props.setIsLoggedIn(false);
+      this.props.setUser(null);
+      document.cookie = "";
+      this.props.notificationHandler(
+        "success",
+        "Logged Out!",
+        "User logged out successfully"
+      );
+    }
+  }
 
   render() {
     const isLoggedIn = this.props.isLoggedIn;
     let button;
     if (isLoggedIn) {
-      button = <LogoutButton onClick={this.handleLogoutClick} />;
+      button = (
+        <ProfileButton
+          handleLogout={this.handleLogout}
+          user={this.props.user}
+          menuAnchorEl={this.state.menuAnchorEl}
+          menuCloseHandler={this.menuCloseHandler}
+          menuClickHandler={this.menuClickHandler}
+        />
+      );
     } else {
       button = <LoginButton />;
     }
     return (
       <div className="root">
-        <AppBar color="inherit" position="sticky">
+        <AppBar color="inherit" position="fixed">
           <Toolbar className="nav-container">
             <TypoGraphy component="div" variant="h6" className="header-logo">
               <Link
@@ -63,7 +132,7 @@ class Navigation extends Component {
                 SmartMatching
               </Link>
             </TypoGraphy>
-            <TypoGraphy component="div" color="inherit" variant="inherit">
+            {/* <TypoGraphy component="div" color="inherit" variant="inherit">
               <Button to={"/about"} component={RouterLink} variant="text">
                 How it Works
               </Button>
@@ -72,12 +141,12 @@ class Navigation extends Component {
               component="div"
               color="inherit"
               variant="inherit"
-              className="links"
             >
-              <Button to={"/about"} component={RouterLink} variant="text">
+              <Button to={"/search"} component={RouterLink} variant="text">
                 Find a Service
               </Button>
-            </TypoGraphy>
+            </TypoGraphy> */}
+            <div className="links"></div>
             <TypoGraphy component="div" variant="inherit">
               {button}
             </TypoGraphy>
@@ -157,6 +226,7 @@ class Navigation extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    url: state.url,
     user: state.user,
     theme: state.theme,
     isLoggedIn: state.isLoggedIn,
