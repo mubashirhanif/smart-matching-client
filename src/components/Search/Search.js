@@ -11,7 +11,6 @@ import TextField from "@material-ui/core/TextField";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
-
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import ServiceItem from "./ServiceItem/ServiceItem";
 import Geocode from "react-geocode";

@@ -178,6 +178,7 @@ class Signup extends Component {
               <TextField
                 error={!!this.state.errors.lastName}
                 helperText={this.state.errors.lastName}
+
                 variant="outlined"
                 margin="normal"
                 required
