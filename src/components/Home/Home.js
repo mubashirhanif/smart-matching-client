@@ -111,13 +111,13 @@ class Home extends Component {
                   <div className="places-autocomplete-home">
                     <GooglePlacesAutocomplete
                       onSelect={this.handleLocationSelect}
+                      initialValue={this.state.location}
                       renderInput={(props) => (
                         <div>
                           <TextField
                             id="filled-location"
                             label="Location"
                             name="location"
-                            variant="filled"
                             {...props}
                           />
                         </div>
@@ -132,7 +132,6 @@ class Home extends Component {
                       type="search"
                       name="searchTerm"
                       onChange={this.handleChange}
-                      variant="filled"
                       value={this.state.searchTerm}
                     />
                   </div>
