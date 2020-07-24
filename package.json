@@ -24,8 +24,8 @@
     "redux-persist": "^6.0.0"
   },
   "scripts": {
-    "start": "cp ../smart-matching-server/development.config.env ./.env; react-scripts start",
-    "build": "cp ../smart-matching-server/production.config.env ./.env; react-scripts build",
+    "start": "cp ../smart-matching-server/.env/development.config.env ./.env; react-scripts start",
+    "build": "cp ../smart-matching-server/.env/production.config.env ./.env; react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

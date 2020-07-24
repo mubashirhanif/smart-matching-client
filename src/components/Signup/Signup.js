@@ -31,6 +31,13 @@ const useStyles = (theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  large: {
+    width: theme.spacing(20),
+    height: theme.spacing(20),
+  },
+  imageButton: {
+    marginLeft: theme.spacing(14.75),
+  }
 });
 
 class Signup extends Component {
@@ -44,6 +51,8 @@ class Signup extends Component {
         firstName: "",
         lastName: "",
         passwordrepeat: "",
+        image: "",
+        baseImage: "",
       },
       errors: {
         username: "",
@@ -52,16 +61,28 @@ class Signup extends Component {
         firstName: "",
         lastName: "",
         passwordrepeat: "",
+        image: "",
       },
     };
-    this.onChangeHandler = this.onChangeHandler.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.submitHandler = this.submitHandler.bind(this);
   }
 
-  onChangeHandler(event) {
+  handleChange(event) {
     let state = this.state;
-    state.fields[event.target.name] = event.target.value;
-    state.errors[event.target.name] = "";
+    let name = event.target.name;
+    if ("image" === name) {
+      let reader = new FileReader();
+      reader.onload = () => {
+        state.fields.baseImage = reader.result;
+        this.setState(state);
+      };
+      state.fields.image = event.target.files[0];
+      reader.readAsDataURL(state.fields.image);
+    } else {
+      state.fields[name] = event.target.value;
+    }
+    state.errors[name] = "";
     this.setState(state);
   }
   submitHandler(event) {
@@ -96,9 +117,7 @@ class Signup extends Component {
     if (!state.fields.passwordrepeat) {
       cont = false;
       state.errors.passwordrepeat = "Please confirm your password";
-    } else if (
-      state.fields.passwordrepeat !== state.fields.password
-    ) {
+    } else if (state.fields.passwordrepeat !== state.fields.password) {
       cont = false;
       state.errors.passwordrepeat = "Passwords do not match";
     }
@@ -115,18 +134,23 @@ class Signup extends Component {
 
   async registerUser(userData) {
     let response = null;
+    let userFormData = new FormData();
+    for (const [key, value] of Object.entries(userData)) {
+      userFormData.append(key, value);
+    }
     try {
-      response = await axios.post(
-        `${this.props.url}/user/`,
-        userData
-      );
+      response = await axios.post(`${this.props.url}/user/`, userFormData);
     } catch (e) {
-      response = e.response;
+      response = {...e.response};
     } finally {
       console.log(response);
 
       if (response.status === 200) {
-        this.props.notificationHandler("success", "Registered Successfully!", "Don't forget to check your email.");
+        this.props.notificationHandler(
+          "success",
+          "Registered Successfully!",
+          "Don't forget to check your email."
+        );
         this.props.setUser(response.data.data);
         this.props.setIsLoggedIn(true);
         this.props.history.push("/");
@@ -140,7 +164,7 @@ class Signup extends Component {
         this.props.notificationHandler("error", "Something's not right", "");
       }
     }
-    
+
     console.log();
   }
 
@@ -161,6 +185,31 @@ class Signup extends Component {
             noValidate
           >
             <div>
+              <input
+                type="file"
+                name="image"
+                ref={"image-input"}
+                style={{ display: "none" }}
+                accept="image/*"
+                onChange={this.handleChange}
+              />
+              <Button
+                className={classes.imageButton}
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={(e) => {
+                  this.refs["image-input"].click();
+                }}
+              >
+                <Avatar
+                  src={
+                    !!this.state.fields.baseImage
+                      ? this.state.fields.baseImage
+                      : "https://via.placeholder.com/150"
+                  }
+                  className={classes.large}
+                />
+              </Button>
               <TextField
                 error={!!this.state.errors.firstName}
                 helperText={this.state.errors.firstName}
@@ -172,13 +221,12 @@ class Signup extends Component {
                 label="First Name"
                 name="firstName"
                 autoComplete="firstName"
-                onChange={this.onChangeHandler}
+                onChange={this.handleChange}
                 autoFocus
               />
               <TextField
                 error={!!this.state.errors.lastName}
                 helperText={this.state.errors.lastName}
-
                 variant="outlined"
                 margin="normal"
                 required
@@ -187,7 +235,7 @@ class Signup extends Component {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lastName"
-                onChange={this.onChangeHandler}
+                onChange={this.handleChange}
                 autoFocus
               />
             </div>
@@ -202,7 +250,7 @@ class Signup extends Component {
               label="Email"
               name="email"
               autoComplete="email"
-              onChange={this.onChangeHandler}
+              onChange={this.handleChange}
               autoFocus
             />
             <TextField
@@ -216,7 +264,7 @@ class Signup extends Component {
               label="Username"
               name="username"
               autoComplete="username"
-              onChange={this.onChangeHandler}
+              onChange={this.handleChange}
               autoFocus
             />
             <TextField
@@ -230,7 +278,7 @@ class Signup extends Component {
               label="Password"
               type="password"
               id="password"
-              onChange={this.onChangeHandler}
+              onChange={this.handleChange}
               autoComplete="current-password"
             />
             <TextField
@@ -245,7 +293,7 @@ class Signup extends Component {
               type="password"
               name="passwordrepeat"
               autoComplete="passwordrepeat"
-              onChange={this.onChangeHandler}
+              onChange={this.handleChange}
               autoFocus
             />
             <Button
