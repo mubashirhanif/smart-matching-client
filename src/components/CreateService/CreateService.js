@@ -11,11 +11,12 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import MyLocationIcon from "@material-ui/icons/MyLocation";
+import Grid from "@material-ui/core/Grid";
 import Geocode from "react-geocode";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import "./CreateService.css";
-import { Grid } from "@material-ui/core";
 import { getTags } from "../../services/tags.service";
+import axios from "axios";
+import "./CreateService.css";
 
 const useStyles = {
   root: {
@@ -42,6 +43,7 @@ class CreateService extends Component {
       fields: {
         title: "",
         image: "",
+        baseImage: "",
         description: "",
         price: "",
         location: "",
@@ -50,6 +52,7 @@ class CreateService extends Component {
       errors: {
         title: "",
         image: "",
+        baseImage: "",
         description: "",
         price: "",
         location: "",
@@ -59,17 +62,21 @@ class CreateService extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.createService = this.createService.bind(this);
     this.userLocationHandler = this.userLocationHandler.bind(this);
     this.handleLocationSelect = this.handleLocationSelect.bind(this);
   }
 
   componentDidMount() {
     getTags(`${this.props.url}/tag/`, (res, err) => {
-      if(err) {
-        this.props.notificationHandler("error", "Server Error", "Something went wrong!");
+      if (err) {
+        this.props.notificationHandler(
+          "error",
+          "Server Error",
+          "Something went wrong!"
+        );
         console.error(err);
-      }
-      else {
+      } else {
         let state = this.state;
         state.tags = res;
         this.setState(state);
@@ -111,21 +118,84 @@ class CreateService extends Component {
     if ("image" === name) {
       let reader = new FileReader();
       reader.onload = () => {
-        state.fields.image = reader.result;
+        state.fields.baseImage = reader.result;
         this.setState(state);
       };
-      reader.readAsDataURL(event.target.files[0]);
+      let image = event.target.files[0];
+      state.fields.image = image;
+      reader.readAsDataURL(image);
     } else {
-      state.fields[name] = newValue;
+      state.fields[name] = event.target.value;
     }
     this.setState(state);
   }
 
-  handleSubmit() {
-    console.log(this.state.fields);
+  handleSubmit(event) {
+    let cont = true;
+    let state = this.state;
+    if (!state.fields.title) {
+      cont = false;
+      state.errors.title = "Please provide a title";
+    }
+    if (!state.fields.description) {
+      cont = false;
+      state.errors.description = "Please provide a description";
+    }
+    if (!state.fields.location) {
+      cont = false;
+      state.errors.location = "Please provide a location";
+    }
+    if (state.fields.tags == []) {
+      cont = false;
+      state.errors.tags = "Please provide some tags";
+      this.props.notificationHandler("error", "Please provide some tags", "");
+    }
+    if (!state.fields.price && 0 >= state.fields.price) {
+      cont = false;
+      state.errors.price = "Please provide a valid price";
+    }
+    if (!state.fields.image) {
+      cont = false;
+      state.errors.image = "Please provide an Image";
+      this.props.notificationHandler("error", "Image is required", "");
+    }
+    this.setState(state);
+    if (cont) {
+      let serviceFormData = new FormData();
+      for (const [key, value] of Object.entries(this.state.fields)) {
+        serviceFormData.append(key, value);
+      }
+      this.createService(serviceFormData);
+    }
+    event.preventDefault();
+  }
+
+  async createService(serviceFormData) {
+    let response = {};
+    try {
+      response = await axios.post(
+        `${this.props.url}/service/`,
+        serviceFormData
+      );
+    } catch (e) {
+      response = { ...e.response };
+    } finally {
+      console.log(response);
+      if (response.status === 200) {
+        this.props.notificationHandler(
+          "success",
+          "Service Created successfully",
+          ""
+        );
+        this.props.history.push("/");
+      } else {
+        console.log(response);
+        this.props.notificationHandler("error", "Something's not right", "");
+      }
+    }
   }
   render() {
-    const { classes, serviceItem } = this.props;
+    const { classes } = this.props;
     return (
       <Grid
         component="form"
@@ -142,8 +212,8 @@ class CreateService extends Component {
                 component="img"
                 className={classes.media}
                 src={
-                  !!this.state.fields.image
-                    ? this.state.fields.image
+                  !!this.state.fields.baseImage
+                    ? this.state.fields.baseImage
                     : "https://via.placeholder.com/150"
                 }
               />
@@ -165,7 +235,9 @@ class CreateService extends Component {
                   this.refs["image-input"].click();
                 }}
               >
-                {!!this.state.fields.image ? "Replace Image" : "Upload Image"}
+                {!!this.state.fields.baseImage
+                  ? "Replace Image"
+                  : "Upload Image"}
               </Button>
               <Button
                 size="large"
@@ -173,6 +245,7 @@ class CreateService extends Component {
                 onClick={(e) => {
                   let s = this.state;
                   s.fields.image = "";
+                  s.fields.baseImage = "";
                   this.setState(s);
                 }}
               >
@@ -187,25 +260,24 @@ class CreateService extends Component {
                 this.state.tags
               }
               name="tags"
-              onChange={this.handleChange}
+              onChange={(event, value) => {
+                this.handleChange({ target: { name: "tags", value: value } });
+              }}
               defaultValue={this.state.fields.tags}
               freeSolo
               fullWidth
+              autoSelect
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
-                  <Chip
-                    label={option}
-                    {...getTagProps({ index })}
-                  />
+                  <Chip label={option} {...getTagProps({ index })} />
                 ))
               }
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  name="tags"
-                  onChange={this.handleChange}
                   label="Tags"
-                  value={this.state.fields.tags}
+                  error={!!this.state.errors.tags}
+                  helperText={this.state.errors.tags}
                   variant="filled"
                   placeholder="Space Seperated tags"
                 />
@@ -220,6 +292,8 @@ class CreateService extends Component {
             label="Title"
             type="text"
             name="title"
+            error={!!this.state.errors.title}
+            helperText={this.state.errors.title}
             onChange={this.handleChange}
           />
           <TextField
@@ -232,6 +306,8 @@ class CreateService extends Component {
             }}
             className={classes.description}
             onChange={this.handleChange}
+            error={!!this.state.errors.description}
+            helperText={this.state.errors.description}
           />
           <Grid container>
             <Grid item xs={6}>
@@ -251,6 +327,8 @@ class CreateService extends Component {
                       id="filled-location"
                       label="Location"
                       name="location"
+                      error={!!this.state.errors.location}
+                      helperText={this.state.errors.location}
                       {...props}
                     />
                   )}
@@ -263,6 +341,8 @@ class CreateService extends Component {
                 name="price"
                 label="Price(EUR)"
                 type="number"
+                error={!!this.state.errors.price}
+                helperText={this.state.errors.price}
                 onChange={this.handleChange}
               />
             </Grid>

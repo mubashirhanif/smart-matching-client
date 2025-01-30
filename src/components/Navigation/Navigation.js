@@ -30,11 +30,8 @@ function ProfileButton(props) {
         aria-haspopup="true"
         onClick={props.menuClickHandler}
       >
-        {props.user ? (
-          <Avatar>
-            {props.user.firstName[0]}
-            {props.user.lastName[0]}
-          </Avatar>
+        {!!props.user ? (
+          <Avatar src={props.user.image}/>
         ) : (
           props.handleLogout()
         )}
@@ -44,8 +41,20 @@ function ProfileButton(props) {
         anchorEl={props.menuAnchorEl}
         open={Boolean(props.menuAnchorEl)}
         onClose={props.menuCloseHandler}
+        style={{ marginTop: 45 }}
         keepMounted
       >
+        <MenuItem>
+          <TypoGraphy color="inherit" variant="inherit">
+            Dark?
+            <Switch
+              checked={props.theme === "dark"}
+              onChange={props.switchTheme}
+              name="themeSwitch"
+              inputProps={{ "aria-label": "secondary checkbox" }}
+            />
+          </TypoGraphy>
+        </MenuItem>
         <MenuItem
           to={"/user"}
           component={RouterLink}
@@ -53,7 +62,11 @@ function ProfileButton(props) {
         >
           My Account
         </MenuItem>
-        <MenuItem to={"/service/create-service"} component={RouterLink} onClick={props.menuCloseHandler}>
+        <MenuItem
+          to={"/service/create-service"}
+          component={RouterLink}
+          onClick={props.menuCloseHandler}
+        >
           Create Service
         </MenuItem>
         <MenuItem to={"/"} component={RouterLink} onClick={props.handleLogout}>
@@ -72,6 +85,7 @@ class Navigation extends Component {
     this.handleLogout = this.handleLogout.bind(this);
     this.menuClickHandler = this.menuClickHandler.bind(this);
     this.menuCloseHandler = this.menuCloseHandler.bind(this);
+    console.log("user", this.props.user);
   }
 
   switchTheme(event) {
@@ -120,6 +134,8 @@ class Navigation extends Component {
           menuAnchorEl={this.state.menuAnchorEl}
           menuCloseHandler={this.menuCloseHandler}
           menuClickHandler={this.menuClickHandler}
+          theme={this.props.theme}
+          switchTheme={this.switchTheme}
         />
       );
     } else {
@@ -143,77 +159,10 @@ class Navigation extends Component {
             <TypoGraphy component="div" variant="inherit">
               {button}
             </TypoGraphy>
-            <TypoGraphy color="inherit" variant="inherit">
-              <Switch
-                checked={this.props.theme === "dark"}
-                onChange={this.switchTheme}
-                name="themeSwitch"
-                inputProps={{ "aria-label": "secondary checkbox" }}
-              />
-            </TypoGraphy>
           </Toolbar>
         </AppBar>
       </div>
     );
-    // <div className="root">
-    //   <AppBar color="inherit" position="static">
-    //     <Toolbar>
-    //       <TypoGraphy color="default" variant="h4">
-    //         <Link
-    //           className="header-icon"
-    //           color="default"
-    //           to={"/"}
-    //           component={RouterLink}
-    //         >
-    //           SmartMatching
-    //         </Link>
-    //       </TypoGraphy>
-
-    //       <List component="nav" className="inline">
-    //         <ListItem component="div" className="list">
-    //           <ListItemText inset>
-    //             <TypoGraphy color="default" variant="default">
-    //               <Button
-    //                 to={"/about"}
-    //                 component={RouterLink}
-    //                 variant="default"
-    //               >
-    //                 How it Works
-    //               </Button>
-    //             </TypoGraphy>
-    //           </ListItemText>
-    //           <ListItemText inset>
-    //             <TypoGraphy color="default" variant="default">
-    //               <Button to={"/service"} component={RouterLink}>
-    //                 Find a Service
-    //               </Button>
-    //             </TypoGraphy>
-    //           </ListItemText>
-    //         </ListItem>
-
-    //         <ListItem component="div">
-    //           <ListItemText inset>
-    //             <TypoGraphy color="default" variant="default">
-    //               <Button to={"/login"} component={RouterLink}>
-    //                 Login
-    //               </Button>
-    //             </TypoGraphy>
-    //           </ListItemText>
-    //           <ListItemText inset>
-    //             <TypoGraphy color="default" variant="default">
-    //               <Switch
-    //                 checked={this.props.theme === "dark"}
-    //                 onChange={this.switchTheme}
-    //                 name="themeSwitch"
-    //                 inputProps={{ "aria-label": "secondary checkbox" }}
-    //               />
-    //             </TypoGraphy>
-    //           </ListItemText>
-    //         </ListItem>
-    //       </List>
-    //     </Toolbar>
-    //   </AppBar>
-    // </div>
   }
 }
 

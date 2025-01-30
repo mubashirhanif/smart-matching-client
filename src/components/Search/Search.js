@@ -16,10 +16,13 @@ import MyLocationIcon from "@material-ui/icons/MyLocation";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import ServiceItem from "./ServiceItem/ServiceItem";
 import Geocode from "react-geocode";
+import { getTags } from "../../services/tags.service";
+import { searchServices } from "../../services/services.service";
 import qs from "qs";
 import "react-google-places-autocomplete/dist/index.min.css";
 import "./Search.css";
-// import SearchIcon from '@material-ui/icons/Search';
+import { Button } from "@material-ui/core";
+
 Geocode.setLanguage("en");
 
 const drawerWidth = 240;
@@ -43,74 +46,22 @@ const useStyles = (theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  submit: {
+    marginTop: 10,
+  },
 });
 class Search extends Component {
   constructor(props) {
     super(props);
-    let tags = [
-      {
-        id: "1",
-        name: "test1",
-      },
-      {
-        id: "2",
-        name: "test2",
-      },
-      {
-        id: "3",
-        name: "test3",
-      },
-      {
-        id: "4",
-        name: "test4",
-      },
-    ];
-
     this.state = {
-      serviceItems: [
-        {
-          imageLink: "https://source.unsplash.com/random",
-          title: "Title 1",
-          description: "Some Long Description 1 ..... ",
-          id: "somehash1",
-        },
-        {
-          imageLink: "https://source.unsplash.com/random",
-          title: "Title 2",
-          description: "Some Long Description 2 ..... ",
-          id: "somehash2",
-        },
-        {
-          imageLink: "https://source.unsplash.com/random",
-          title: "Title 3",
-          description: "Some Long Description 3 ..... ",
-          id: "somehash3",
-        },
-        {
-          imageLink: "https://source.unsplash.com/random",
-          title: "Title 3",
-          description: "Some Long Description 3 ..... ",
-          id: "somehash3",
-        },
-        {
-          imageLink: "https://source.unsplash.com/random",
-          title: "Title 3",
-          description: "Some Long Description 3 ..... ",
-          id: "somehash3",
-        },
-        {
-          imageLink: "https://source.unsplash.com/random",
-          title: "Title 3",
-          description: "Some Long Description 3 ..... ",
-          id: "somehash3",
-        },
-      ],
+      serviceItems: [],
       fields: {
         location: "",
         searchTerm: "",
-        tags: tags,
-        priceRange: [10, 100],
+        tags: [],
+        priceRange: [0, 1000],
       },
+      tags: [],
     };
     this.state.fields = {
       ...this.state.fields,
@@ -118,6 +69,53 @@ class Search extends Component {
     };
     this.userLocationHandler = this.userLocationHandler.bind(this);
     this.handleLocationSelect = this.handleLocationSelect.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.fetchServices = this.fetchServices.bind(this);
+    this.filteredSearch = this.filteredSearch.bind(this);
+  }
+
+  componentDidMount() {
+    getTags(`${this.props.url}/tag/`, (res, err) => {
+      if (err) {
+        this.props.notificationHandler(
+          "error",
+          "Server Error",
+          "Something went wrong!"
+        );
+        console.error(err);
+      } else {
+        let state = this.state;
+        state.tags = res;
+        this.setState(state);
+      }
+    });
+    this.fetchServices(this.state.fields);
+  }
+
+  filteredSearch(serviceItems) {
+    return serviceItems;
+  }
+
+  fetchServices(filterObject) {
+    let _filterObject = filterObject;
+    _filterObject.tags = filterObject.tags.map((tag)=>tag.toLowerCase());
+
+    searchServices(`${this.props.url}/service`, _filterObject, (res, err) => {
+      if (err) {
+        this.props.notificationHandler("error", "Something went wrong!");
+        console.error(err);
+      } else {
+        let state = this.state;
+        state.serviceItems = res;
+        this.setState(state);
+      }
+    });
+  }
+
+  handleChange(event) {
+    let state = this.state;
+    state.fields[event.target.name] = event.target.value;
+    this.setState(state);
   }
 
   handleLocationSelect(location) {
@@ -152,7 +150,7 @@ class Search extends Component {
   render() {
     const { classes } = this.props;
     const serviceItems = [];
-    for (const item of this.state.serviceItems) {
+    for (const item of this.filteredSearch(this.state.serviceItems)) {
       serviceItems.push(
         <Grid item>
           <ServiceItem key={item.id} serviceItem={{ ...item }} />
@@ -212,12 +210,14 @@ class Search extends Component {
                 <Autocomplete
                   multiple
                   fullWidth
+                  name="tags"
                   id="tags-outlined"
-                  options={
-                    // TODO: map all the services to tags
-                    this.state.fields.tags
-                  }
-                  getOptionLabel={(option) => option.name}
+                  options={this.state.tags}
+                  onChange={(event, value) => {
+                    this.handleChange({
+                      target: { name: "tags", value: value },
+                    });
+                  }}
                   defaultValue={this.state.fields.tags}
                   filterSelectedOptions
                   renderInput={(params) => (
@@ -236,15 +236,28 @@ class Search extends Component {
                     Price range
                   </TypoGraphy>
                   <Slider
-                    fullWidth
+                    name="priceRange"
                     value={this.state.fields.priceRange}
-                    onChange={this.handleChange}
+                    onChange={(event, value) => {
+                      this.handleChange({
+                        target: { name: "priceRange", value: value },
+                      });
+                    }}
                     valueLabelDisplay="auto"
                     aria-labelledby="price-range-slider"
                   />
                 </div>
               </ListItem>
             </List>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={(e) => this.fetchServices(this.state.fields)}
+            >
+              Update Search
+            </Button>
           </div>
         </Drawer>
         <main className={classes.content}>
@@ -260,6 +273,7 @@ class Search extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    url: state.url,
     notificationHandler: state.notificationHandler,
   };
 };

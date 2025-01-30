@@ -76,8 +76,8 @@ class App extends Component {
   bindApiInterceptor() {
     axios.interceptors.response.use(undefined, (error) => {
       if (error.response.status === 401) {
-        this.props.setUser(null);
         this.props.setIsLoggedIn(false);
+        this.props.setUser(null);
         this.notificationHandler("warning", "", "Not logged in!");
         return Promise.reject(error);
       }
